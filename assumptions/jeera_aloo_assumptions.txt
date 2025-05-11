@@ -1,0 +1,3 @@
+Default assumption that 1 potato is generally around 200 grams.
+Default assumption that 1 teaspoon of dry spices typically weighs around 5 grams.
+Default assumption that 1 tablespoon of oil is approximately 15 grams.

@@ -6,7 +6,6 @@ const openai = new OpenAI({
 });
 
 const unitsCsvPath = "./src/data/Unit of measurements.csv";
-console.log(unitsCsvPath);
 
 export const generateRecipe = async (dishName: string) => {
   try {
@@ -15,9 +14,22 @@ export const generateRecipe = async (dishName: string) => {
       messages: [
         {
           role: "system",
-          content: `You are a cooking assistant that tells about the ingredients based on dishname. You will use the ${parseUnitsCsv(
+          content: `You are a cooking assistant that tells about the ingredients based on dishname. You are only allowed to use the ${parseUnitsCsv(
             unitsCsvPath
-          )} to tell the unit of the ingredients. Dont use the terms outside the measurement csv file, if you dont have any option then you will according to your understanding and the context of the dish as well as the measurement csv file need to convert them into units  present in the measurement  csv file. No other units or words that are not present in the measurement csv file will be used.`,
+          )} units to tell the unit of the ingredients. No other unit will be considered. For the units that are not present in the ${parseUnitsCsv(
+            unitsCsvPath
+          )} file, if for any ingredient you are not able to find the unit that is present in ${parseUnitsCsv(
+            unitsCsvPath
+          )} file, you according to your knowledge have to convert them to the unit present and assign them some default amount which is generally used by other people from your knowledge base. And you have to write those assumptions also in assumptions part which you took to convert the unit. The output should be in the following format:
+          Ingredients:
+          - Ingredient 1: Amount (Unit)
+          - Ingredient 2: Amount (Unit)
+          - ...
+          Assumptions:
+          - Assumption 1: Amount (Unit)
+          - Assumption 2: Amount (Unit)
+          - ...
+          `,
         },
         {
           role: "user",

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateRecipe } from "@/lib/openAi";
+import { parseAiResponse } from "@/lib/aiResponseParse";
 
 export async function POST(request: NextRequest) {
   try {
     const { dishName } = await request.json();
-    const recipe = await generateRecipe(dishName);
+    const recipe = await parseAiResponse(dishName);
     return NextResponse.json({ recipe });
   } catch (error: unknown) {
     if (error instanceof Error) {
