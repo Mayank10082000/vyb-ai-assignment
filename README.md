@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VYB AI Assignment - Nutrition Estimator
+
+This project implements a smart nutrition estimator for Indian dishes that calculates nutritional values per standard serving, even when data is partial, ambiguous, or incomplete.
+
+## Features
+
+- Takes a dish name as input and estimates its nutritional content
+- Handles edge cases such as:
+  - Ingredient synonyms and spelling variations
+  - Missing quantities
+  - Ambiguous dish types
+  - Missing ingredients in the nutrition database
+  - Non-standard measurement units
+  - Recipes with no fixed ingredient list
+  - Ambiguous serving sizes
+
+## How It Works
+
+1. **Recipe Generation**: Using OpenAI to generate a list of ingredients for a given dish
+2. **Ingredient Mapping**: Mapping ingredients to the nutrition database, handling synonyms and variations
+3. **Unit Conversion**: Converting household measurements to grams
+4. **Dish Type Identification**: Identifying the dish type and standard serving size
+5. **Nutrition Calculation**: Calculating nutrition per 100g basis and scaling to standard serving size
+
+## API Endpoints
+
+- `POST /api/recipe/estimate`: Estimates nutrition for a given dish name
+
+  ```json
+  {
+    "dishName": "Paneer Butter Masala"
+  }
+  ```
+
+- `PUT /api/recipe/estimate`: Test endpoint that introduces specific issues for testing
+
+  ```json
+  {
+    "dish": "Chana Masala",
+    "issues": ["missing ingredient in nutrition DB", "quantity missing"]
+  }
+  ```
+
+- `GET /api/recipe/test-dishes`: Returns the predefined test dishes
+- `POST /api/recipe/test-dishes`: Returns the reasoning tasks and solutions
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+
+- OpenAI API key
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository
+2. Install dependencies
+   ```
+   npm install
+   ```
+3. Create a `.env.local` file with your OpenAI API key
+   ```
+   OPENAI_API_KEY=your-api-key
+   ```
+4. Run the development server
+   ```
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testing with Postman
 
-## Learn More
+1. Start the development server
+2. Send a POST request to `http://localhost:3000/api/recipe/estimate` with a JSON body:
+   ```json
+   {
+     "dishName": "Paneer Butter Masala"
+   }
+   ```
+3. To test edge cases, send a PUT request to the same endpoint with:
+   ```json
+   {
+     "dish": "Chana Masala",
+     "issues": ["missing ingredient in nutrition DB"]
+   }
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+## Data Sources
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project uses the following data sources:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Nutrition data for common ingredients
+- Household measurement references
+- Food category classifications
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/src/app/api/recipe/estimate`: API routes for nutrition estimation
+- `/src/app/api/recipe/test-dishes`: API routes for test cases
+- `/src/lib/nutritionUtils.ts`: Core nutrition calculation logic
+- `/src/lib/openAi.ts`: OpenAI integration for recipe generation
+- `/src/lib/parseCsv.ts`: CSV parsing utilities
+- `/src/lib/types.ts`: TypeScript type definitions
+- `/src/data/`: CSV data files
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Edge Case Handling
+
+The system handles the following edge cases:
+
+- **Ingredient Synonyms**: Maps variant names (e.g., "aloo" → "potato")
+- **Missing Quantities**: Applies reasonable defaults
+- **Ambiguous Dish Types**: Uses pattern matching to identify dish categories
+- **Missing Ingredients**: Uses default nutritional values
+- **Unit Variations**: Converts various units to a standard gram measurement
+- **No Fixed Recipe**: Handles dishes with variable ingredients
+- **Ambiguous Serving Size**: Adjusts to standard serving sizes based on dish type
